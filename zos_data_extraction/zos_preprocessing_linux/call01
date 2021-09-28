@@ -1,0 +1,348 @@
+#!/bin/bash
+clear
+
+
+#[1] Select models to process
+
+#(1-1)      AWI-CM-1-1-HR  				-regridding 
+#(2-6)      AWI-CM-1-1-MR 				-regridding
+#(7-7)      CESM1-CAM5-SE-HR			-indexing (hyper-slab d time)
+#(8-8)      CMCC-CM2-HR4				-indexing
+#(9-9)      CMCC-CM2-VHR4				-indexing
+#(10-12)    CNRM-CM6-1-HR				-Unknown (append)
+#(13-13)    CNRM-CM6-1-HR (historical)	-Unknown (hyper-slab d time)
+#(14-16)    EC-Earth3P  				-indexing
+#(17-19)    EC-Earth3P-HR  				-idexing
+#(20-25)    ECMWF-IFS-HR   				-indexing
+#(26-28)    ECMWF-IFS-MR   				-indexing
+#(29-29)    GFDL-CM4 (historical)       -CMIP6 (hyper-slab by lat and lon)
+#(30-30)    HadGEM3-GC31-HH				-indexing
+#(31-33)    HadGEM3-GC31-HM				-indexing
+#(34-36)    HadGEM3-GC31-MM				-indexing
+#(37-40)    HadGEM3-GC31-MM (historical)-indexing
+#(41-41)    MPI-ESM1-2-HR				-Unknown (append)
+#(42-42)    MPI-ESM1-2-XR				-Unknown (append)
+#(43-47)    E3SM-1-0 (historical)   	-CMIP6 (hyper-slab by lat and lon)
+#(48-48)    AVISO                       -CMIP6 (hyper-slab by lat and lon)
+
+
+#    0 1 2 3 4 5  6  7  8  9  10 11 12 13 14 15 16 17 18 19
+LMN=(1 2 7 8 9 10 13 14 17 20 26 29 30 31 34 37 41 42 43 48)
+PF=19 	#Process from model #
+PT=19	#Process to model #
+
+
+#[2] Model processing 
+for MNI in $(seq ${PF} ${PT}); do
+	
+	#(1) Select model to process
+	MN=${LMN[MNI]}
+	echo ""
+	echo "AlhmedAllah $MN"
+
+	#(2) Model specific detail	
+	if [[ $MN == "1" ]] ; then
+		 #Simulation number 1
+		 model="AWI-CM-1-1-HR"
+		 exp="hist-1950"
+		 Sim=(r1i1p1f2)
+		 #j(min, max): -78.5548, 89.8987
+		 #i(min, max): -179.9999, 179.9999
+		 Hyper_slab_1D="regrid"
+		 #lon(i) from W to E has 1306775 cells
+		 #lat(j) from S to N has 1306775 cells
+		 #Re-gridding required: Skip hyper-slab and file appending at the moment
+
+	elif [[ $MN == "2" ]] ; then
+		 #Simulation number 2
+		 model="AWI-CM-1-1-MR"
+		 exp="historical"
+		 Sim=(r1i1p1f1 r2i1p1f1 r3i1p1f1 r4i1p1f1 r5i1p1f1)
+		 #j(min, max): -78.5347, 89.8945
+		 #i(min, max): -179.9995, 179.9997
+		 Hyper_slab_1D="regrid"
+		 #lon(i) from W to E has 830305 cells
+		 #lat(j) from S to N has 830305 cells
+		 #Re-gridding required: Skip hyper-slab and file appending at the moment
+
+	elif [[ $MN == "7" ]] ; then
+		 #Simulation number 7
+		 model="CESM1-CAM5-SE-HR"
+		 exp="hist-1950"
+		 Sim=(r1i1p1f1)
+		 #j(min, max): 1, 2400
+		 #i(min, max): 1, 3600
+		 #lat(min, max): -78.4729, 89.9679
+		 #lon(min, max):-1, 359.9999
+		 Hyper_slab_1D="indexing"
+		 #lon(i) from W to E has 3600 cells
+		 #lat(j) from S to N has 2400 cells
+		 #ncks -O -F -d i,100,350 -F -d j,1355,1573 $in $out
+		 #ncks -O -F -d nlon,100,350 -F -d nlat,1355,1573 $in $out
+		 IDX=(100 350 1355 1573)
+
+	elif [[ $MN == "8" ]] ; then
+		 #Simulation number 8
+		 model="CMCC-CM2-HR4"
+		 exp="hist-1950"
+		 Sim=(r1i1p1f1)
+		 #j(min, max): 0, 1050
+		 #i(min, max): 0, 1441
+		 #lat(min, max): -78.7953, 89.9479
+		 #lon(min, max):9.0949e-13, 360
+		 Hyper_slab_1D="indexing"
+		 #lon(i) from W to E has 1442 cells
+		 #lat(j) from S to N has 1051 cells
+		 #ncks -O -F -d i,722,850 -F -d j,598,684 $in $out
+		 #ncks -O -F -d i,722,850 -F -d j,598,684 $in $out
+		 IDX=(722 850 598 684)
+
+	elif [[ $MN == "9" ]] ; then
+		 #Simulation number 9
+		 model="CMCC-CM2-VHR4"
+		 exp="hist-1950"
+		 Sim=(r1i1p1f1)
+		 #j(min, max): 0, 1050
+		 #i(min, max): 0, 1441
+		 #lat(min, max): -78.7953, 89.9479
+		 #lon(min, max):9.0949e-13, 360
+		 Hyper_slab_1D="indexing"
+		 #lon(i) from W to E has 1442 cells
+		 #lat(j) from S to N has 1051 cells
+		 #ncks -O -F -d i,722,850 -F -d j,598,684 $in $out
+		 #ncks -O -F -d i,722,850 -F -d j,598,684 $in $out
+		 IDX=(722 850 598 684)
+
+	elif [[ $MN == "10" ]] ; then
+		 #Simulation number 10
+		 model="CNRM-CM6-1-HR"
+		 exp="hist-1950"
+		 Sim=(r1i1p1f2 r2i1p1f2 r3i1p1f2)
+		 #lat(min, max): -78.7417, 89.9479
+		 #lon(min, max):-180, 180
+		 Hyper_slab_1D="Unknown"
+		 #lon(i) from W to E has 1442 cells
+		 #lat(j) from S to N has 1050 cells
+		 #Skip hyper-slab and just append 3 files with total size of 1.3 GB
+
+	elif [[ $MN == "13" ]] ; then
+		 #Simulation number 13
+		 model="CNRM-CM6-1-HR"
+		 exp="historical"
+		 Sim=(r1i1p1f2)
+		 #lat(min, max): -78.7417, 89.9479
+		 #lon(min, max):-180, 180
+		 Hyper_slab_1D="Unknown"
+		 #lon(i) from W to E has 1442 cells
+		 #lat(j) from S to N has 1050 cells
+		 #Skip hyper-slab and just append 1 files with total size of 5.04 GB
+
+	elif [[ $MN == "14" ]] ; then
+		 #Simulation number 14
+		 model="EC-Earth3P"
+		 exp="hist-1950"
+		 Sim=(r1i1p2f1 r2i1p2f1 r3i1p2f1)
+		 #j(min, max): 1, 292
+		 #i(min, max): 1, 362
+		 #lat(min, max): -78.5799, 89.7418
+		 #lon(min, max):0, 359.9949
+		 Hyper_slab_1D="indexing"
+		 #lon(i) from W to E has 362 cells
+		 #lat(j) from S to N has 292 cells
+		 #ncks -O -F -d i,192,213 -F -d j,179,201 $in $out
+		 #ncks -O -F -d i,192,213 -F -d j,179,201 $in $out
+		 IDX=(190 213 179 201)
+
+	elif [[ $MN == "17" ]] ; then
+		 #Simulation number 17
+		 model="EC-Earth3P-HR"
+		 exp="hist-1950"
+		 Sim=(r1i1p2f1 r2i1p2f1 r3i1p2f1)
+		 #j(min, max): 1, 1050
+		 #i(min, max): 1, 1442
+		 #lat(min, max): -78.7417, 89.9479
+		 #lon(min, max):0, 359.9998
+		 Hyper_slab_1D="indexing"
+		 #lon(i) from W to E has 1442 cells
+		 #lat(j) from S to N has 1050 cells
+		 #ncks -O -F -d i,750,850 -F -d j,597,681 $in $out
+		 #ncks -O -F -d i,750,850 -F -d j,597,681 $in $out
+		 IDX=(750 850 597 681)
+
+	elif [[ $MN == "20" ]] ; then
+		 #Simulation number 20
+		 model="ECMWF-IFS-HR"
+		 exp="hist-1950"
+		 Sim=(r1i1p1f1 r2i1p1f1 r3i1p1f1 r4i1p1f1 r5i1p1f1 r6i1p1f1)
+		 #j(min, max): 1, 1442
+		 #i(min, max): 1, 1021
+		 #lat(min, max): -77.0105, 89.9479
+		 #lon(min, max):3.638e-12, 360
+		 Hyper_slab_1D="indexing"
+		 #lon(i) from W to E has 1021 cells
+		 #lat(j) from S to N has 1442 cells
+		 #ncks -O -F -d i,722,850 -F -d j,568,654 $in $out
+		 #ncks -O -F -d i,722,850 -F -d j,568,654 $in $out
+		 IDX=(568 654 720 850)
+		 #DX=(722 850 568 654)
+
+	elif [[ $MN == "26" ]] ; then
+		 #Simulation number 26
+		 model="ECMWF-IFS-MR"
+		 exp="hist-1950"
+		 Sim=(r1i1p1f1 r2i1p1f1 r3i1p1f1)
+		 #j(min, max): 1, 1442
+		 #i(min, max): 1, 1021
+		 #lat(min, max): -77.0105, 89.9479
+		 #lon(min, max):3.638e-12, 360
+		 Hyper_slab_1D="indexing"
+		 #lon(i) from W to E has 1021 cells
+		 #lat(j) from S to N has 1442 cells
+		 #ncks -O -F -d i,722,850 -F -d j,568,654 $in $out
+		 #ncks -O -F -d i,722,850 -F -d j,568,654 $in $out
+		 IDX=(568 654 720 850)
+
+	elif [[ $MN == "29" ]] ; then
+		 echo "AlhmedAllah1"
+		 #Simulation number 29
+		MOD=2 
+		if [[ $MOD == "1" ]] ; then
+			model="GFDL-CM4"
+			Sim=(r1i1p1f1)
+		elif [[ $MOD == "2" ]] ; then
+			model="GFDL-ESM4"
+		 	Sim=(r2i1p1f1 r3i1p1f1)
+		fi	
+		exp="historical"
+		 #j(min, max): -80.3892, 89.946
+		 #i(min, max): -299.7242, 60.0277
+		 #lat(min, max): -81.6031, 89.9388
+		 #lon(min, max):-299.9995, 60.0337
+		 Hyper_slab_1D="CMIP6"
+		 #lon(i) from W to E has 1440 cells
+		 #lat(j) from S to N has 1080 cells
+      	 #ncks -O -F -d i,-100,-75 -F -d j,17,35 $in $out
+	     #ncks -O -F -d x,-100,-75 -F -d y,17,35 $in $out
+		 IDX=(-100.0 -75.0 17.0 35.0)
+
+
+	elif [[ $MN == "30" ]] ; then
+		 #Simulation number 30
+		 model="HadGEM3-GC31-HH"
+		 exp="hist-1950"
+		 Sim=(r1i1p1f1)
+		 #j(min, max): 0, 3603
+		 #i(min, max): 0, 4319
+		 #lat(min, max): -85.6522, 89.9802
+		 #lon(min, max):-180, 180
+		 Hyper_slab_1D="indexing"
+		 #lon(i) from W to E has 4320 cells
+		 #lat(j) from S to N has 3604 cells
+		 #ncks -O -F -d i,2200,2545 -F -d j,2248,2507 $in $out
+		 #ncks -O -F -d i,2200,2545 -F -d j,2248,2507 $in $out
+		 IDX=(2200 2545 2248 2507)
+
+	elif [[ $MN == "31" ]] ; then
+		 #Simulation number 31
+		 model="HadGEM3-GC31-HM"
+		 exp="hist-1950"
+		 Sim=(r1i1p1f1 r1i3p1f1 r1i2p1f1)
+		 #j(min, max): 0, 1204
+		 #i(min, max): 0, 1439
+		 #lat(min, max): -89.4875, 89.9479
+		 #lon(min, max):-180, 180
+		 Hyper_slab_1D="indexing"
+		 #lon(i) from W to E has 1440 cells
+		 #lat(j) from S to N has 1205 cells
+		 #ncks -O -F -d i,721,849 -F -d j,753,839 $in $out
+		 #ncks -O -F -d i,721,849 -F -d j,753,839 $in $out
+		 IDX=(721 849 753 839)
+
+	elif [[ $MN == "34" ]] ; then
+		 #Simulation number 34
+		 model="HadGEM3-GC31-MM"
+		 exp="hist-1950"
+		 Sim=(r1i1p1f1 r1i2p1f1 r1i3p1f1)
+		 #j(min, max): 0, 1204
+		 #i(min, max): 0, 1439
+		 #lat(min, max): -89.4875, 89.9479
+		 #lon(min, max):-180, 180
+		 Hyper_slab_1D="indexing"
+		 #lon(i) from W to E has 1440 cells
+		 #lat(j) from S to N has 1205 cells
+		 #ncks -O -F -d i,721,849 -F -d j,753,839 $in $out
+		 #ncks -O -F -d i,721,849 -F -d j,753,839 $in $out
+		 IDX=(721 849 753 839)
+
+	elif [[ $MN == "37" ]] ; then
+		 #Simulation number 37
+		 model="HadGEM3-GC31-MM"
+		 exp="historical"
+		 Sim=(r1i1p1f3 r2i1p1f3 r3i1p1f3 r4i1p1f3)
+		 #j(min, max): 0, 1204
+		 #i(min, max): 0, 1439
+		 #lat(min, max): -89.4875, 89.9479
+		 #lon(min, max):-180, 180
+		 Hyper_slab_1D="indexing"
+		 #lon(i) from W to E has 1440 cells
+		 #lat(j) from S to N has 1205 cells
+		 #ncks -O -F -d i,721,849 -F -d j,753,839 $in $out
+		 #ncks -O -F -d i,721,849 -F -d j,753,839 $in $out
+		 IDX=(721 849 753 839)
+
+	elif [[ $MN == "41" ]] ; then
+		 #Simulation number 41
+		 model="MPI-ESM1-2-HR"
+		 exp="hist-1950"
+		 Sim=(r1i1p1f1)
+		 #lat(min, max): -78.7178, 89.7631
+		 #lon(min, max):-179.9941, 179.9989
+		 Hyper_slab_1D="Unknown"
+		 #lon(i) from W to E has 802 cells
+		 #lat(j) from S to N has 404 cells
+		 #Skip hyper-slab and just append 25 files with total size of 0.5 GB
+
+	elif [[ $MN == "42" ]] ; then
+		 #Simulation number 42
+		 model="MPI-ESM1-2-XR"
+		 exp="hist-1950"
+		 Sim=(r1i1p1f1)
+		 #lat(min, max): -78.7178, 89.7631
+		 #lon(min, max):-179.9941, 179.9989
+		 Hyper_slab_1D="Unknown"
+		 #lon(i) from W to E has 802 cells
+		 #lat(j) from S to N has 404 cells
+		 #Skip hyper-slab and just append 25 files with total size of 0.5 GB
+
+	elif [[ $MN == "43" ]] ; then
+		 #Simulation number 43
+		 model="E3SM-1-0"
+		 exp="historical"
+		 Sim=(r1i1p1f1 r2i1p1f1 r3i1p1f1 r4i1p1f1 r5i1p1f1)
+		 #j(min, max): -89.5, 89.5
+		 #i(min, max): 0.5, 359.5
+		 Hyper_slab_1D="CMIP6"
+		 #lon(i) from W to E has 360 cells
+		 #lat(j) from S to N has 180 cells
+		 #ncks -O -F -d i,260,285 -F -d j,17,35 $in $out
+		 #ncks -O -F -d lon,260,285 -F -d lat,17,35 $in $out
+		 IDX=(260.0 285.0 17.0 35.0)
+	elif [[ $MN == "48" ]] ; then
+		#zos_Omon_AVISO-1-0_BE_gn_199210-201012.nc
+		model="AVISO-1-0"
+		exp="BE"
+		Sim=(r0)
+		Hyper_slab_1D="CMIP6"
+		IDX=(260.0 285.0 17.0 35.0)
+		echo "AVISO Data"
+
+	fi
+
+
+	#(3) process model
+	folder=260W285S_17S35N
+		for sim in "${Sim[@]}"; do
+			. ./dlist.bash
+		done
+done
+
