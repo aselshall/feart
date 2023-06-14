@@ -5,3 +5,5 @@ The folder `Karenia_brevis_data_analysis` contains the codes for processing the 
 
 The folder `zos_data_extraction` contains the codes for preprocessing zos data (sea surface height above geoid). These are mainly data crunching tasks such as hyber-slabing, and stacking using the netCDF Operators (NCO, http://nco.sourceforge.net/). This is followed by data extraction along 300 m Bathymetry (B300) in the study area. This is mainly to reduce the size of the Earth system models (ESMs) data and reanalysis data from 80 GB to about 10 MB for the ESMs data `zos_data_B300_ESMs43210.npy` and less than 1 MB for the reanalysis data `zos_data_B300_Reanalysis10_phy001_030_r1.csv`. These two files are used as input files for `SubsetSelection.ipynb` and its interactive version `c2.ipynb`.
 
+Elshall, A.S., M. Ye, S.A. Kranz, J. Harrington, X. Yang, Y. Wan, and M. Maltrud (2022), Subset selection for improving predictions of Earth system models for regional environmental management of red tide, Frontiers in Earth Science, 10:786223, https://doi.org/10.3389/feart.2022.786223
+
